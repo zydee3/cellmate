@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your profile - cellmate</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login">
+<aside class="panel"><a class="wordmark" href="/home">cellmate</a></aside>
+<main class="form-side">
+  <form class="profile-form" method="post" action="/profile" enctype="multipart/form-data">
+    <h1>Your profile</h1>
+    {{with .Error}}<p class="error" role="alert">{{.}}</p>{{end}}
+    <label for="display_name">Display name</label>
+    <input id="display_name" name="display_name" type="text" maxlength="40" value="{{.Profile.DisplayName}}" required>
+    <label for="photo">Photo (JPEG or PNG, up to 5 MB)</label>
+    {{with .Profile.PhotoID}}<img class="profile-thumb" src="/photos/{{.}}" alt="Your current photo">{{end}}
+    <input id="photo" name="photo" type="file" accept="image/jpeg,image/png">
+    <label for="bio">Bio</label>
+    <textarea id="bio" name="bio" rows="4" maxlength="500">{{.Profile.Bio}}</textarea>
+    <label for="convictions">Conviction history (optional)</label>
+    <textarea id="convictions" name="convictions" rows="4" maxlength="500">{{.Profile.Convictions}}</textarea>
+    <button class="btn btn-pill" type="submit">Save profile</button>
+  </form>
+</main>
+</body>
+</html>

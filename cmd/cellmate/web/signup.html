@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create account - cellmate</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login">
+<aside class="panel"><span class="wordmark">cellmate</span></aside>
+<main class="form-side">
+  <form method="post" action="/signup">
+    <h1>Create account</h1>
+    {{with .Error}}<p class="error" role="alert">{{.}}</p>{{end}}
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" autocomplete="email" value="{{.Email}}" required>
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+    <label class="consent"><input name="consent" type="checkbox" value="yes" required> I am 18 or older, and no court order, parole, or probation condition bars me from using dating or social sites or contacting other people with convictions.</label>
+    <button class="btn btn-pill" type="submit">Create account</button>
+    <a class="back" href="/login">Already have an account? Log in</a>
+  </form>
+</main>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home - cellmate</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="landing">
+<svg class="mug-defs" aria-hidden="true" focusable="false">
+  <symbol id="silhouette" viewBox="0 0 120 160">
+    <g fill="currentColor"><circle cx="60" cy="58" r="17"/><rect x="53" y="70" width="14" height="20"/><path d="M22 160C22 116 38 96 60 96C82 96 98 116 98 160Z"/></g>
+  </symbol>
+</svg>
+<header class="topbar">
+  <a class="wordmark" href="/home">cellmate</a>
+  <form class="logout" method="post" action="/logout"><button class="btn btn-ghost" type="submit">Log out</button></form>
+</header>
+<main class="hero home">
+  {{with .Error}}<p class="error">{{.}}</p>{{end}}
+  <section class="lineup-section" aria-labelledby="lineup-title">
+    <h1 id="lineup-title" class="home-title">Today's lineup</h1>
+    {{if .Picked}}
+    <p class="lineup-hint">You picked {{.Picked.Profile.DisplayName}} today. Your next lineup comes at midnight Pacific.</p>
+    <div class="lineup-stage">
+      {{template "height-scale"}}
+      <ol class="lineup">{{template "suspect" .Picked}}</ol>
+    </div>
+    {{else if .Lineup}}
+    <p class="lineup-hint">Tap a member to read their record. You get one pick a day.</p>
+    <div class="lineup-stage">
+      {{template "height-scale"}}
+      <ol class="lineup">{{range .Lineup}}{{template "suspect" .}}{{end}}</ol>
+    </div>
+    {{else}}
+    <p class="lineup-hint">No one is in your lineup today. Check back after midnight Pacific.</p>
+    {{end}}
+  </section>
+  <div class="home-lower">
+    <section class="matches" aria-labelledby="matches-title">
+      <h2 id="matches-title" class="card-label">Matches</h2>
+      {{if .Matches}}
+      <ul class="match-list">
+        {{range .Matches}}
+        <li class="match">
+          {{if .Profile.PhotoID}}<img class="match-photo" src="/photos/{{.Profile.PhotoID}}" alt="">{{else}}<svg class="match-photo" aria-hidden="true"><use href="#silhouette"/></svg>{{end}}
+          <span class="match-name">{{.Profile.DisplayName}}</span>
+        </li>
+        {{end}}
+      </ul>
+      {{else}}
+      <p class="match-empty">No matches yet. A match forms when someone you picked picks you back.</p>
+      {{end}}
+    </section>
+    {{with .User.Profile}}
+    <article class="card card-me">
+      {{if .PhotoID}}<img class="card-photo" src="/photos/{{.PhotoID}}" alt="Photo of {{.DisplayName}}">{{else}}<div class="card-photo card-photo-empty" aria-hidden="true"></div>{{end}}
+      <div class="card-body">
+        <h2 class="card-name">{{.DisplayName}}</h2>
+        {{with .Bio}}<p class="card-bio">{{.}}</p>{{end}}
+        {{with .Convictions}}<h3 class="card-label">Conviction history</h3><p class="card-bio">{{.}}</p>{{end}}
+        <a class="btn btn-ghost card-edit" href="/profile">Edit profile</a>
+      </div>
+    </article>
+    {{end}}
+  </div>
+  <p class="signed-in">Logged in as {{.User.Email}}</p>
+</main>
+</body>
+</html>
+{{define "height-scale"}}<div class="height-scale" aria-hidden="true"><span>6'6</span><span>6'2</span><span>5'10</span><span>5'6</span><span>5'2</span><span>4'10</span><span>4'6</span></div>{{end}}
+{{define "suspect"}}
+<li class="suspect">
+  <button class="suspect-open" type="button" popovertarget="m-{{.ID}}">
+    {{if .Profile.PhotoID}}<img class="suspect-photo" src="/photos/{{.Profile.PhotoID}}" alt="">{{else}}<svg class="suspect-photo" aria-hidden="true"><use href="#silhouette"/></svg>{{end}}
+    <span class="placard"><span class="placard-dept">CELLMATE PD</span><span class="placard-name">{{.Profile.DisplayName}}</span></span>
+  </button>
+  <div class="dossier" id="m-{{.ID}}" popover>
+    <h2 class="card-name">{{.Profile.DisplayName}}</h2>
+    <h3 class="card-label">Bio</h3>
+    <p class="card-bio">{{with .Profile.Bio}}{{.}}{{else}}No bio.{{end}}</p>
+    <h3 class="card-label">Conviction history</h3>
+    <p class="card-bio">{{with .Profile.Convictions}}{{.}}{{else}}None listed.{{end}}</p>
+    <div class="dossier-actions">
+      {{if .CanPick}}<form method="post" action="/lineup/pick"><input type="hidden" name="member" value="{{.ID}}"><button class="btn btn-pill" type="submit">Pick {{.Profile.DisplayName}}</button></form>{{end}}
+      <button class="btn btn-ghost dossier-close" type="button" popovertarget="m-{{.ID}}" popovertargetaction="hide">Close</button>
+    </div>
+  </div>
+</li>
+{{end}}
